@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "amichef-5df3e"
+  },
+  "targets": {
+    "amichef-5df3e": {
+      "hosting": {
+        "amichef": [
+          "amichef-5df3e"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
