@@ -225,7 +225,8 @@ function QuickRecipeFindPage() {
             const transcript = event.results[last][0].transcript;
             if (transcript) {
                 setSearchTerm(transcript);
-                // No search yet, just update the search term
+                toast.success(`Heard: "${transcript}". Searching now...`);
+                fetchRecipes(transcript);
             }
         };
 
@@ -235,13 +236,8 @@ function QuickRecipeFindPage() {
             setIsVoiceLoading(false);
         };
         
-        // This is the key change: trigger the search only when the speech session ends.
         recognition.onend = () => {
             setIsVoiceLoading(false);
-            if (searchTerm.trim()) {
-                toast.success(`Heard: "${searchTerm}". Searching now...`);
-                fetchRecipes(searchTerm);
-            }
         };
         
         recognition.start();

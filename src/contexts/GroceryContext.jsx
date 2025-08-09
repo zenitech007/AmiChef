@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../utils/uuid.js';
 
 const GroceryContext = createContext();
 
@@ -29,7 +29,7 @@ export const GroceryProvider = ({ children }) => {
   }, [groceryList]);
 
   const addItem = (item) => {
-    const newItem = { ...item, id: uuidv4(), checked: false, pantryStatus: 'missing', category: item.category || 'Other' };
+    const newItem = { ...item, id: uuid(), checked: false, pantryStatus: 'missing', category: item.category || 'Other' };
     setGroceryList((prevList) => [...prevList, newItem]);
     return true;
   };

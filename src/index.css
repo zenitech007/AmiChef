@@ -78,3 +78,26 @@ input:checked + .slider:before {
   transform: scale(0.98);
   transition: opacity 300ms, transform 300ms;
 }
+
+/* Loading spinner for voice/image search */
+.loader-sm {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #FF6F00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dark {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+}

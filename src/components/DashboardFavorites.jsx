@@ -43,7 +43,6 @@ function DashboardFavorites({ onViewRecipe }) {
                             <RecipeCard
                                 recipe={recipe}
                                 onSelect={() => onViewRecipe(recipe)}
-                                // ✅ FIX: Pass the isFavorite function itself, not its result
                                 isFavorite={isFavorite}
                                 onToggleFavorite={toggleFavorite}
                                 isFavoritesList={true}

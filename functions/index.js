@@ -3,17 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 
-// ✅ Lazy Load Kroger API
-function getKrogerApi() {
-  try {
-    return require("./krogerApi");
-  } catch (err) {
-    console.error("⚠️ Kroger API module missing:", err.message);
-    const fallbackApp = express();
-    fallbackApp.get("/", (req, res) => res.send("Fallback Kroger API"));
-    return fallbackApp;
-  }
-}
+// Import Kroger API
+const krogerApp = require("./krogerApi");
 
 // ✅ Main Express App
 const app = express();
@@ -21,6 +12,9 @@ app.use(cors({ origin: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("AmiChef Backend is running ✅"));
+
+// Mount Kroger API
+app.use("/kroger", krogerApp);
 
 // --- Paystack Payment Endpoint ---
 app.post("/paystack/initialize", async (req, res) => {
@@ -196,5 +190,4 @@ app.post("/edamam/search", async (req, res) => {
 
 // ✅ Exports
 exports.api = functions.https.onRequest(app);
-exports.kroger = functions.https.onRequest(getKrogerApi());
 exports.ping = functions.https.onRequest((req, res) => res.send("pong"));

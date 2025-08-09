@@ -140,9 +140,11 @@ function SmartPantryPage() {
     };
 
     // --- AI Feature Handlers ---
-    // ✅ THIS IS THE FIX: The dependency array for this function was causing an infinite loop.
-    // By creating a stable string of IDs, we ensure this function is only re-created when the actual items change.
-    const nearExpiryIds = nearExpiryItems.map(item => item.id).join(',');
+    // Create a stable dependency for nearExpiryItems
+    const nearExpiryIds = React.useMemo(() => 
+        nearExpiryItems.map(item => item.id).join(','), 
+        [nearExpiryItems]
+    );
 
     const fetchUseItUpRecipes = useCallback(async () => {
         if (!isPremium || nearExpiryItems.length === 0) {
@@ -162,11 +164,11 @@ function SmartPantryPage() {
         } finally {
             setIsAiLoading(false);
         }
-    }, [isPremium, nearExpiryIds, SPOONACULAR_API_KEY]); // Using the stable 'nearExpiryIds' string here
+    }, [isPremium, nearExpiryIds, SPOONACULAR_API_KEY]);
 
     useEffect(() => {
         fetchUseItUpRecipes();
-    }, [fetchUseItUpRecipes]); // This is now safe because fetchUseItUpRecipes is stable
+    }, [fetchUseItUpRecipes]);
 
     const handleImageUpload = (event) => {
         if (!isPremium) {

@@ -12,9 +12,10 @@ const RecipeCard = ({
   onToggleFavorite,
   showFloatingButton = true,   // ✅ NEW PROP (toggle floating button)
   buttonText = "View Details", // ✅ NEW PROP (custom button text)
+  isFavoritesList = false,     // ✅ NEW PROP (indicates if this is in favorites list)
 }) => {
   // ✅ Safely check if recipe is a favorite
-  const isCurrentlyFavorite = isFavorite ? isFavorite(recipe.id) : false;
+  const isCurrentlyFavorite = isFavoritesList || (isFavorite ? isFavorite(recipe.id) : false);
 
   const handleCardClick = () => {
     if (!isLocked && onSelect) onSelect(recipe);

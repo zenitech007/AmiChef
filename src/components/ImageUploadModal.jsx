@@ -11,16 +11,13 @@ const ImageUploadModal = ({ isOpen, onClose, onAddItems }) => {
     if (!isOpen) return null;
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    };
-
-    const convertToBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]); // base64 string only
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
+        const selectedFile = e.target.files[0];
+        if (selectedFile && selectedFile.type.startsWith('image/')) {
+            setFile(selectedFile);
+        } else {
+            toast.error("Please upload a valid image file.");
+            setFile(null);
+        }
     };
 
     const processImage = async () => {
@@ -29,11 +26,12 @@ const ImageUploadModal = ({ isOpen, onClose, onAddItems }) => {
         setProcessedItems([]);
 
         try {
-            const base64Image = await convertToBase64(file);
+            const formData = new FormData();
+            formData.append('image', file);
+
             const response = await fetch('/api/process-image', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageBase64: base64Image })
+                body: formData,
             });
 
             if (!response.ok) {

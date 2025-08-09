@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { UserContext } from '../App.jsx';
 import DashboardLayout from '../components/DashboardLayout.jsx';
+import ImageUploadModal from '../components/ImageUploadModal.jsx';
 import {
     FaShoppingCart, FaCheck, FaPlus, FaLock, FaFilePdf, FaRobot,
     FaSearch, FaFilter, FaPen, FaTrash, FaLightbulb, FaTruck, FaExclamationCircle,
@@ -120,113 +121,6 @@ const AddEditItemModal = ({ isOpen, onClose, onSave, itemToEdit, title }) => {
                     </select>
                 </div>
                 <button onClick={handleSave} className="w-full bg-secondary-green text-white font-bold py-2 px-4 rounded-full mt-6 hover:opacity-90">Save</button>
-            </div>
-        </div>
-    );
-};
-
-// --- Image Upload Modal ---
-const ImageUploadModal = ({ isOpen, onClose, onAddItems }) => {
-    const [file, setFile] = useState(null);
-    const [processedItems, setProcessedItems] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    if (!isOpen) return null;
-
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile && selectedFile.type.startsWith('image/')) {
-            setFile(selectedFile);
-        } else {
-            toast.error("Please upload a valid image file.");
-            setFile(null);
-        }
-    };
-
-    const processImage = async () => {
-        if (!file) return;
-        setIsLoading(true);
-
-        try {
-            const formData = new FormData();
-            formData.append('image', file);
-
-            const response = await fetch('/api/process-image', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) throw new Error('Failed to process image.');
-            const data = await response.json();
-
-            setProcessedItems(data.items || []);
-            toast.success("Image processed successfully!");
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to process image.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleItemChange = (index, field, value) => {
-        setProcessedItems(prev => {
-            const updated = [...prev];
-            updated[index][field] = value;
-            return updated;
-        });
-    };
-
-    const handleAdd = () => {
-        if (processedItems.length === 0) return;
-        onAddItems(processedItems);
-        onClose();
-        setFile(null);
-        setProcessedItems([]);
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-xl w-full p-6 relative">
-                <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700">
-                    <FaTimes />
-                </button>
-                <h3 className="text-xl font-bold mb-4">Upload Grocery List Image</h3>
-                <div className="space-y-4">
-                    <input type="file" onChange={handleFileChange} accept="image/*" className="w-full p-2 border rounded-md" />
-                    <button onClick={processImage} disabled={!file || isLoading} className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600 disabled:opacity-50">
-                        {isLoading ? 'Processing...' : 'Scan Image'}
-                    </button>
-                    {processedItems.length > 0 && (
-                        <div className="mt-4 border-t pt-4">
-                            <h4 className="font-semibold mb-2">Items Found:</h4>
-                            <ul className="space-y-2 max-h-40 overflow-y-auto pr-2">
-                                {processedItems.map((item, index) => (
-                                    <li key={index} className="bg-gray-50 p-2 rounded">
-                                        <input
-                                            type="text"
-                                            value={item.name}
-                                            onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                                            className="w-full p-1 border rounded mb-1"
-                                            placeholder="Item Name"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={item.quantity}
-                                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                                            className="w-full p-1 border rounded"
-                                            placeholder="Quantity"
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="flex justify-between mt-4">
-                                <button onClick={onClose} className="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-full hover:bg-gray-400">Cancel</button>
-                                <button onClick={handleAdd} disabled={processedItems.length === 0} className="bg-secondary-green text-white font-bold py-2 px-4 rounded-full hover:opacity-90 disabled:opacity-50">Add to List</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
             </div>
         </div>
     );
@@ -515,7 +409,7 @@ function GroceryListPage() {
             const newIndex = groceryList.findIndex(item => item.id === over.id);
 
             const newGroceryList = arrayMove(groceryList, oldIndex, newIndex);
-            updateGroceryItem({ groceryList: newGroceryList });
+            updateStateAndSave({ groceryList: newGroceryList });
         }
     };
 

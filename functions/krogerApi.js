@@ -1,35 +1,43 @@
-// File: /functions/index.js
 const functions = require("firebase-functions");
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const axios = require("axios");
 
-dotenv.config(); // Load local .env if available
-
-const stripe = require("stripe")(
-  functions.config().stripe?.secret_key || process.env.STRIPE_SECRET || "sk_test_dummy"
-);
-
-const paystack = require("paystack-api")(
-  functions.config().paystack?.secret_key || process.env.PAYSTACK_SECRET || "sk_test_dummy"
-);
-
-// Import Kroger-related API routes
-const krogerRoutes = require("./krogerApi");
-
-const app = express();
-
-// Middleware
+const krogerApp = express();
 app.use(cors({ origin: true }));
-app.use(express.json());
+krogerApp.use(express.json());
 
-// Routes
-app.use("/kroger", krogerRoutes);
+// Kroger API endpoint
+krogerApp.post('/', async (req, res) => {
+  try {
+    const { query, category, priceRange, location, page = 1 } = req.body;
 
-// Basic health route
-app.get("/", (req, res) => {
-  res.send("✅ Firebase Functions API is running.");
+    // Mock Kroger API response for development
+    // In production, replace with actual Kroger API calls
+    const mockItems = [
+      {
+        description: `${query} - Premium Brand`,
+        brand: "Kroger",
+        items: [{
+          price: { regular: Math.random() * 10 + 2 },
+          inventory: { stockLevel: Math.floor(Math.random() * 100) }
+        }]
+      },
+      {
+        description: `${query} - Organic`,
+        brand: "Simple Truth",
+        items: [{
+          price: { regular: Math.random() * 15 + 3 },
+          inventory: { stockLevel: Math.floor(Math.random() * 50) }
+        }]
+      }
+    ];
+
+    res.status(200).json({ items: mockItems });
+  } catch (error) {
+    console.error("Kroger API Error:", error);
+    res.status(500).json({ error: "Failed to fetch groceries" });
+  }
 });
 
-// Export the express app as a Firebase Function
-exports.api = functions.https.onRequest(app);
+module.exports = krogerApp;

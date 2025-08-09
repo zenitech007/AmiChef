@@ -4,6 +4,7 @@ import React, { useState, createContext, useContext, useEffect, createRef, useCa
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Toaster, toast } from 'react-hot-toast';
+import { uuid } from './utils/uuid.js';
 
 import { auth } from './firebase';
 import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useGrocery } from "../contexts/GroceryContext.jsx";
+import { UserContext } from "../App.jsx";
 import { toast } from 'react-hot-toast';
 
 const GrocerySearch = () => {
-  const { addItem } = useGrocery();
+  const { addItemToGroceryList } = React.useContext(UserContext);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [category, setCategory] = useState("all");
@@ -14,8 +14,8 @@ const GrocerySearch = () => {
   const [smartSuggestions, setSmartSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // You MUST replace this with the URL of your deployed Firebase function
-  const FIREBASE_FUNCTION_URL = "YOUR_DEPLOYED_FIREBASE_FUNCTION_URL";
+  // Firebase function URL - update this when deployed
+  const FIREBASE_FUNCTION_URL = "https://us-central1-amichef-5df3e.cloudfunctions.net/api/kroger";
 
   const categories = ["all", "dairy", "meat", "vegetables", "fruits", "beverages", "snacks"];
 
@@ -55,7 +55,7 @@ const GrocerySearch = () => {
   };
 
   const handleAddToGroceryList = item => {
-    addItem({
+    addItemToGroceryList({
       name: item.description,
       quantity: "1",
       category: category === "all" ? "Other" : category,
